@@ -2,6 +2,14 @@
 
 このファイルは [release-please](https://github.com/googleapis/release-please) が更新します（ADR-0021）。
 
+## [1.0.1](https://github.com/tkc310/koyomi/compare/v1.0.0...v1.0.1) (2026-10-24)
+
+
+### ドキュメント
+
+* **loi-krathong:** 仏足跡の言い伝えの結末を直す ([#49](https://github.com/tkc310/koyomi/issues/49)) ([2540f06](https://github.com/tkc310/koyomi/commit/2540f06023923d48b8cf9b136efbb910586bcef2))
+* **loi-krathong:** 仏足跡四つの言い伝えを足す ([#47](https://github.com/tkc310/koyomi/issues/47)) ([e89daff](https://github.com/tkc310/koyomi/commit/e89daff6e9aef75b30eb14e862b772b98c61c67b))
+
 ## 1.0.0 (2026-10-22)
 
 最初の公開版です（https://koyomi.tkc310.com）。
