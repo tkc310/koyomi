@@ -28,6 +28,16 @@ it('.tool-versions の版を使う', () => {
   expect(workflow).not.toMatch(/node-version:|version:\s*\d/);
 });
 
+it('Node.js 26.13.0 と @types/node のメジャーを揃える', () => {
+  const root = join(import.meta.dirname, '..');
+  const tools = readFileSync(join(root, '.tool-versions'), 'utf8');
+  expect(tools).toMatch(/^nodejs 26\.13\.0$/m);
+  const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8')) as {
+    devDependencies: { '@types/node': string };
+  };
+  expect(pkg.devDependencies['@types/node']).toMatch(/^\^26\./);
+});
+
 // GitHub は Node 20 で動くアクションを廃止する。Node 24 で動く版より古いものに戻さない
 it('どのワークフローも Node 24 で動く版のアクションを使う', () => {
   const minimum: Record<string, number> = {
