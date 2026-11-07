@@ -244,6 +244,19 @@ describe('/events/[id]', { timeout: 120_000 }, () => {
     expect(html).toContain(`<meta property="og:image" content="${site}/og.png"`);
   });
 
+  // X（Twitter）のカードは og を読まないことがあるので、twitter: にも同じ値を出す
+  it.each(seoPages)('%s に og と同じ値の twitter のメタを出す', (path) => {
+    const html = page(path);
+    const meta = (attr: string, key: string) =>
+      html.match(new RegExp(`<meta ${attr}="${key}" content="([^"]*)"`))?.[1];
+    for (const key of ['title', 'description', 'image', 'image:alt']) {
+      const og = meta('property', `og:${key}`);
+      expect(og, `og:${key}`).toBeTruthy();
+      expect(meta('name', `twitter:${key}`), `twitter:${key}`).toBe(og);
+    }
+    expect(meta('name', 'twitter:image')).toBe(`${site}/og.png`);
+  });
+
   it.each(seoPages)('%s に JSON-LD（WebSite、トップ以外はパンくず）を出す', (path, url) => {
     const html = page(path);
     const blocks = [...html.matchAll(/<script type="application\/ld\+json">([^<]*)<\/script>/g)];
