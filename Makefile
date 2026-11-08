@@ -7,6 +7,17 @@ SHELL := /bin/bash
 # vp をグローバルに入れていなくても動くよう、プロジェクト内の vite-plus を使う
 VP ?= pnpm exec vp
 
+# 実行時に外へ出る通信を減らす（ADR-0024）。
+# Astro はビルド・型検査のたびに telemetry.astro.build へ利用状況を送る。wrangler は利用状況と更新の確認を送る
+export ASTRO_TELEMETRY_DISABLED := 1
+export WRANGLER_SEND_METRICS := false
+export WRANGLER_HIDE_BANNER := true
+
+# デプロイに使う wrangler。版を固定し、pnpm dlx のキャッシュ（~/.cache/pnpm/dlx）を期限なしで使い回す。
+# CI は Deploy ワークフローがこのキャッシュを保存するので、版を変えたときだけ取りに行く（ADR-0024）
+WRANGLER_VERSION := 4.158.0
+WRANGLER := pnpm_config_dlx_cache_max_age=525600 pnpm dlx --allow-build=esbuild --allow-build=workerd wrangler@$(WRANGLER_VERSION)
+
 # 引数（例: make ui-add C="heading card"）
 C ?=
 
@@ -65,7 +76,7 @@ announcements: ## タイ中央銀行の API で告示を暦の計算・正解デ
 	node --import ./scripts/diff-pythaidate/resolve-ts.mjs scripts/announcements/check-bot.ts
 
 deploy: build verify ## Cloudflare Workers にデプロイする（初回のログインは CONTRIBUTING.md の「リリース」。ADR-0016）
-	pnpm dlx --allow-build=esbuild --allow-build=workerd wrangler@4 deploy
+	$(WRANGLER) deploy
 
 ##@ UI
 

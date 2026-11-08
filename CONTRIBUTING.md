@@ -32,7 +32,7 @@ make dev     # http://localhost:4321
 | `make ui-add C="heading card"` | `vp dlx shadcn@latest add @8341/...`           | 8341-ui の部品を足す                                              |
 | `make icons`                   | `node scripts/icons.ts`                        | 法輪の favicon・PWA のアイコンを作り直す（macOS の sips）         |
 | `make brand`                   | `python3 scripts/brand/*.py`                   | ロゴ（`logo.svg`・`logo.png`）と OGP バナー（`og.png`）を作り直す |
-| `make deploy`                  | `make verify` + `pnpm dlx wrangler@4 deploy`   | Cloudflare Workers にデプロイ（ADR-0016）                         |
+| `make deploy`                  | `make verify` + `pnpm dlx wrangler@4.x deploy` | Cloudflare Workers にデプロイ（ADR-0016）                         |
 | `make clean`                   | `rm -rf dist .astro`                           | 成果物を消す                                                      |
 
 `vp dev` / `vp build` は素の Vite を動かすので使いません。Astro のコマンドは `package.json` の scripts に集約し、`vp run <script>` で呼びます。
@@ -166,6 +166,8 @@ make deploy                                                             # build 
 ```
 
 `pnpm dlx` は、wrangler が使う esbuild と workerd のインストール時のスクリプトを `--allow-build` で許さないと止まります（`ERR_PNPM_IGNORED_BUILDS`）。`make deploy` は付けてあります。
+
+`make deploy` の wrangler の版は `Makefile` の `WRANGLER_VERSION` で固定し、一度取ってきたものを使い回します（ADR-0024）。版を上げるときはこの値を書き換えます。
 
 ### ロールバック
 

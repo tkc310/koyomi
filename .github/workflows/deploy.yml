@@ -59,6 +59,13 @@ jobs:
         env:
           pnpm_config_store_dir: ${{ runner.temp }}/pnpm-store
 
+      # wrangler（pnpm dlx の取得物）を保存し、デプロイのたびに npm から取ってこない。
+      # 版は Makefile の WRANGLER_VERSION なので、Makefile が変わったときだけ取り直す（ADR-0024）
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/pnpm/dlx
+          key: wrangler-dlx-${{ runner.os }}-${{ hashFiles('.tool-versions', 'Makefile') }}
+
       # build・verify の後に wrangler で dist/ を送る（make deploy。手元と同じ）
       - name: ビルドしてデプロイする
         run: make deploy
