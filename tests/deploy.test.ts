@@ -65,7 +65,29 @@ describe('Cloudflare Workers へのデプロイ', () => {
   });
 
   it('make deploy は build と verify の後に wrangler で送る', () => {
-    expect(read('Makefile')).toMatch(/^deploy: build verify .*\n\tpnpm dlx .*wrangler@4 deploy$/m);
+    const makefile = read('Makefile');
+    expect(makefile).toMatch(/^deploy: build verify .*\n\t\$\(WRANGLER\) deploy$/m);
+    expect(makefile).toMatch(/^WRANGLER := .*pnpm dlx .*wrangler@\$\(WRANGLER_VERSION\)$/m);
+  });
+
+  // 実行時に外へ出る通信を減らす（ADR-0024）
+  it('wrangler は版を固定し、取得物を CI で保存して使い回す', () => {
+    const makefile = read('Makefile');
+    expect(makefile).toMatch(/^WRANGLER_VERSION := 4\.\d+\.\d+$/m);
+    expect(makefile).toMatch(/^WRANGLER := pnpm_config_dlx_cache_max_age=\d+ pnpm dlx /m);
+    const workflow = read('.github/workflows/deploy.yml');
+    expect(workflow).toMatch(/path: ~\/\.cache\/pnpm\/dlx\n\s+key: .*hashFiles\([^)]*'Makefile'/);
+    // キャッシュはデプロイより前に戻す
+    expect(workflow.indexOf('~/.cache/pnpm/dlx')).toBeLessThan(
+      workflow.indexOf('run: make deploy'),
+    );
+  });
+
+  it('Astro と wrangler の利用状況の送信と更新の確認を止める', () => {
+    const makefile = read('Makefile');
+    expect(makefile).toMatch(/^export ASTRO_TELEMETRY_DISABLED := 1$/m);
+    expect(makefile).toMatch(/^export WRANGLER_SEND_METRICS := false$/m);
+    expect(makefile).toMatch(/^export WRANGLER_HIDE_BANNER := true$/m);
   });
 
   it('wrangler を入れるときに esbuild と workerd のビルドを許す（pnpm の allowBuilds）', () => {

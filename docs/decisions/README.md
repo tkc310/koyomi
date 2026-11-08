@@ -28,6 +28,7 @@
 | [0021](./0021-release-please.md)                 | バージョンとリリースノートを release-please で自動化する                                              | 採用                   |
 | [0022](./0022-yearly-rebuild.md)                 | 毎年 1 月 1 日に自動でビルドし直し、定期実行を毎月有効にし直す                                        | 採用                   |
 | [0023](./0023-announcement-check.md)             | タイ中央銀行の API で告示を毎月照合し、知らせることがあれば Issue を立てる                            | 採用                   |
+| [0024](./0024-minimize-external-access.md)       | コマンドと CI の実行時に外へ出る通信を減らす                                                          | 採用                   |
 
 ## テンプレート
 
